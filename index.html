@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Sales Onboarding</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #222222);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0; padding: 20px; box-sizing: border-box;
+        }
+        .card { text-align: center; max-width: 400px; width: 100%; }
+        .logo { font-size: 48px; margin-bottom: 10px; }
+        h1 { font-size: 24px; margin: 10px 0; color: var(--tg-theme-text-color, #222222); }
+        p { font-size: 16px; margin-bottom: 20px; opacity: 0.8; }
+        .emp-badge {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            color: var(--tg-theme-text-color, #222222);
+            padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-block; margin-bottom: 30px;
+        }
+        .status-msg { margin-top: 15px; font-size: 14px; font-weight: 500; }
+        .btn {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">💼</div>
+    <h1>ERP Sales Portal</h1>
+    <p>Field Representative Verification</p>
+    <div class="emp-badge" id="empIdDisplay">Verifying Parameter...</div>
+    <button class="btn" id="verifyBtn">Verify PSR & Join Group</button>
+    <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand(); 
+
+    // Extract startapp parameter parsed from WhatsApp
+    const employeeId = tg.initDataUnsafe.start_param || "UNKNOWN_EMP";
+    document.getElementById('empIdDisplay').innerText = `Employee ID: ${employeeId}`;
+
+    const telegramUser = tg.initDataUnsafe.user;
+    const chat_id = telegramUser ? telegramUser.id : null;
+    const first_name = telegramUser ? telegramUser.first_name : "User";
+
+    document.getElementById('verifyBtn').addEventListener('click', async () => {
+        if (!chat_id) {
+            document.getElementById('statusMsg').innerText = "❌ Error: Could not resolve Telegram Chat ID.";
+            document.getElementById('statusMsg').style.color = "red";
+            return;
+        }
+
+        document.getElementById('verifyBtn').innerText = "Processing Verification...";
+        document.getElementById('verifyBtn').disabled = true;
+
+        try {
+            const response = await fetch('/api/telegram-map', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employee_id: employeeId, telegram_chat_id: chat_id, name: first_name })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('statusMsg').innerText = "✅ Verified successfully! Redirecting to group...";
+                document.getElementById('statusMsg').style.color = "green";
+                
+                setTimeout(() => {
+                    // CRITICAL: Replace with your actual private group invite link generated in Step 1
+                    tg.openTelegramLink("https://t.me");
+                    tg.close();
+                }, 1500);
+            } else {
+                document.getElementById('statusMsg').innerText = `❌ Error: ${data.message}`;
+                document.getElementById('statusMsg').style.color = "red";
+                document.getElementById('verifyBtn').innerText = "Verify PSR & Join Group";
+                document.getElementById('verifyBtn').disabled = false;
+            }
+        } catch (err) {
+            document.getElementById('statusMsg').innerText = "❌ Network Error connecting to ERP engine.";
+            document.getElementById('statusMsg').style.color = "red";
+            document.getElementById('verifyBtn').disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
