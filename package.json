@@ -1,0 +1,14 @@
+{
+  "name": "sdlhub-telegram-onboarding",
+  "version": "1.0.0",
+  "description": "ERP Web App Connector Blueprint",
+  "main": "whatsapp-sender.js",
+  "scripts": {
+    "start": "node whatsapp-sender.js"
+  },
+  "dependencies": {
+    "whatsapp-web.js": "^1.26.0",
+    "qrcode-terminal": "^0.12.0",
+    "express": "^4.19.2"
+  }
+}
