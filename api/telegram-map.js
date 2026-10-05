@@ -1,8 +1,8 @@
 // Static User Collection to replicate structural database storage
 let staticEmployeeDB = [
-    { employee_id: "EMP1024", name: "Rahul Kumar", phone: "919876543210", telegram_chat_id: null, status: "Pending" },
-    { employee_id: "EMP1025", name: "Amit Sharma", phone: "918765432109", telegram_chat_id: null, status: "Pending" },
-    { employee_id: "EMP1026", name: "Priya Patel", phone: "917654321098", telegram_chat_id: null, status: "Pending" }
+    { employee_id: "EMP1024", name: "Sunil Ghate PSR", phone: "919167655538", telegram_chat_id: null, status: "Pending" },
+    // { employee_id: "EMP1025", name: "Amit Sharma", phone: "918765432109", telegram_chat_id: null, status: "Pending" },
+    // { employee_id: "EMP1026", name: "Priya Patel", phone: "917654321098", telegram_chat_id: null, status: "Pending" }
 ];
 
 module.exports = async (req, res) => {
